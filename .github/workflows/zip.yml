@@ -20,4 +20,4 @@ jobs:
           name: Latest Source
           files: repo-content.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
