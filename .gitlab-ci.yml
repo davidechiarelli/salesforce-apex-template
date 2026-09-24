@@ -1,0 +1,47 @@
+stages:
+  - deploy
+  - catalog
+
+deploy-salesforce:
+  stage: deploy
+  image: alpine:3.20
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  before_script:
+    - apk add --no-cache bash curl jq openssl
+  script:
+    - bash scripts/rest/deploy-apex-class.sh
+  after_script:
+    - mv scripts/rest/deploy.env deploy.env || true
+  artifacts:
+    reports:
+      dotenv: deploy.env
+  # Required CI/CD variables (Settings > CI/CD > Variables), all masked/protected:
+  #   SF_CLIENT_ID      - Consumer Key of the Connected App / External Client App
+  #   SF_USERNAME       - Salesforce USERNAME (Setup > Users), not the email
+  #   SF_JWT_KEY_FILE   - type "File", content = the RSA private key (server.key)
+  #   SF_LOGIN_URL      - optional, defaults to https://login.salesforce.com
+
+#publish-catalog-record:
+# stage: catalog
+# image: alpine:3.20
+# needs:
+#   - job: deploy-salesforce
+#     artifacts: true
+# rules:
+#   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+# variables:
+#   MIA_CONSOLE_ENDPOINT: "https://demo.console.gcp.mia-platform.eu"
+#   MIA_COMPANY_ID: "b933f1ef-5b8e-4adf-a346-24a3b03d13e8" # "Experiments" tenant
+# before_script:
+#   - apk add --no-cache bash curl jq
+#   # TODO: pin an actual miactl release for your OS/arch, see
+#   # https://docs.mia-platform.eu/docs/products/console/cli/miactl/overview
+#   - curl -sSL https://github.com/mia-platform/miactl/releases/latest/download/miactl-linux-amd64 -o /usr/local/bin/miactl
+#   - chmod +x /usr/local/bin/miactl
+# script:
+    - bash scripts/rest/publish-catalog-record.sh "$DEPLOY_ORG_ID" "$DEPLOY_INSTANCE_URL" "$DEPLOY_STATUS" "$DEPLOY_CLASSES"
+  # Required CI/CD variables (Settings > CI/CD > Variables), masked/protected:
+  #   MIA_CLIENT_ID     - Client ID of the "salesforce-deployer" Service Account (Experiments tenant)
+  #   MIA_CLIENT_SECRET - Client Secret of the "salesforce-deployer" Service Account
+  # MIA_CONSOLE_ENDPOINT / MIA_COMPANY_ID are set above; override here if they ever change.

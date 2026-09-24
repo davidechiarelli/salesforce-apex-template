@@ -1,0 +1,11 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true
+    }
+  ],
+  "name": "salesforce-apex-template",
+  "namespace": "",
+  "sourceApiVersion": "61.0"
+}

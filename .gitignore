@@ -1,0 +1,11 @@
+.sf/
+.sfdx/
+.vscode/
+*.log
+*.swp
+.env
+scripts/rest/.env
+scripts/rest/server.key
+scripts/rest/server.crt
+deploy.env
+scripts/rest/deploy.env
