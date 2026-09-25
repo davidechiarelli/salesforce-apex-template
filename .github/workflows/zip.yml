@@ -1,0 +1,23 @@
+name: Generate Clean Zip
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  zip-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Crea ZIP dei file grezzi
+        run: zip -r repo-content.zip . -x "*.git*" ".github/*"
+
+      - name: Aggiorna Release "latest"
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Source
+          files: repo-content.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
